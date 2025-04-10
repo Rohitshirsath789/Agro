@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroAssist - Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #28a745;
+            --secondary-color: #218838;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('https://images.pexels.com/photos/2165688/pexels-photo-2165688.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #14be14 0%, #648eb3 100%);
+            padding: 15px 30px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .header img {
+            width: 80px;
+            height: auto;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .buttons button {
+            padding: 8px 15px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .logout {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .login {
+            background-color: var(--info-color);
+            color: white;
+        }
+        
+        .buttons button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            padding: 100px 30px 30px;
+            width: 70%;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .welcome-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .feature {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 150px;
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .feature h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .feature p {
+            color: #555;
+            margin-bottom: 0;
+            flex-grow: 1;
+        }
+        
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .users {
+            width: 25%;
+            padding: 100px 20px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-left: 1px solid #e0e0e0;
+            overflow-y: auto;
+            height: calc(100vh - 50px);
+            position: fixed;
+            right: 0;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.05);
+        }
+        
+        .users h3 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .user-section {
+            margin-bottom: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .action-buttons button {
+            padding: 5px 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 3px;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .delete-button {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .update-button {
+            background-color: var(--info-color);
+            color: white;
+        }
+        
+        .action-buttons button:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .active {
+            background-color: #28a745;
+        }
+        
+        .inactive {
+            background-color: #dc3545;
+        }
+        
+        @media (max-width: 1200px) {
+            .container {
+                width: 60%;
+            }
+            .users {
+                width: 40%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .container, .users {
+                width: 100%;
+                position: static;
+                height: auto;
+            }
+            .users {
+                border-left: none;
+                border-top: 1px solid #e0e0e0;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <img src="image/logo1.png" alt="AgroAssist Logo">
+            <h1>AgroAssist Dashboard</h1>
+        </div>
+        <div class="buttons">
+            <button class="logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+            <button class="login" onclick="goToLogin()">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="welcome-section">
+            <h2 id="welcome-message">Welcome to AgroAssist</h2>
+            <p id="user-role-display">Loading your information...</p>
+        </div>
+        
+        <div class="feature-grid">
+            <div class="feature" onclick="window.location.href='market-prices.html'">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Real-time Market Prices</h3>
+                <p>Get the latest commodity prices and market trends to make informed selling decisions.</p>
+            </div>
+            
+            <div class="feature" onclick="window.location.href='weather.html'">
+                <div class="feature-icon">
+                    <i class="fas fa-cloud-sun"></i>
+                </div>
+                <h3>Weather Forecasts & Alerts</h3>
+                <p>Accurate weather predictions and severe weather alerts for your location.</p>
+            </div>
+            
+            <div class="feature" onclick="window.location.href='govt-schemes.html'">
+                <div class="feature-icon">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+                <h3>Government Scheme Awareness</h3>
+                <p>Information about subsidies, loans, and other government agricultural schemes.</p>
+            </div>
+            
+            <div class="feature" onclick="window.location.href='crop-disease.html'">
+                <div class="feature-icon">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <h3>Crop Disease Detection</h3>
+                <p>Upload images of your crops to identify potential diseases and get treatment suggestions.</p>
+            </div>
+            
+            <div class="feature" onclick="window.location.href='language-support.html'">
+                <div class="feature-icon">
+                    <i class="fas fa-language"></i>
+                </div>
+                <h3>Multilingual Support</h3>
+                <p>Access the platform in your preferred local language for better understanding.</p>
+            </div>
+            
+            <div class="feature" onclick="window.location.href='expert-advice.html'">
+                <div class="feature-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <h3>Expert Advice</h3>
+                <p>Connect with agricultural experts for personalized advice and solutions.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="users">
+        <div class="user-section">
+            <h3><i class="fas fa-store"></i> Registered Merchants</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Contact</th>
+                        <th>Products</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="merchantTable"></tbody>
+            </table>
+        </div>
+
+        <div class="user-section">
+            <h3><i class="fas fa-tractor"></i> Registered Farmers</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Contact</th>
+                        <th>Location</th>
+                        <th>Produce</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="farmerTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            
+            if (!currentUser) {
+                alert("Please login first!");
+                window.location.href = "index.html";
+                return;
+            }
+            
+            // Update welcome message
+            document.getElementById("welcome-message").textContent = `Welcome back, ${currentUser.name}!`;
+            document.getElementById("user-role-display").textContent = `You are logged in as a ${currentUser.role}`;
+            
+            // Load user data
+            loadUsers();
+            
+            // Show appropriate buttons based on login status
+            if (currentUser) {
+                document.querySelector('.login').style.display = 'none';
+            } else {
+                document.querySelector('.logout').style.display = 'none';
+            }
+        });
+
+        function logout() {
+            if (confirm("Are you sure you want to logout?")) {
+                localStorage.removeItem("currentUser");
+                window.location.href = "index.html";
+            }
+        }
+
+        function goToLogin() {
+            window.location.href = "index.html";
+        }
+
+        function loadUsers() {
+            const merchantTable = document.getElementById("merchantTable");
+            const farmerTable = document.getElementById("farmerTable");
+            merchantTable.innerHTML = "";
+            farmerTable.innerHTML = "";
+
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+            if (users.length === 0) {
+                merchantTable.innerHTML = `<tr><td colspan="5" style="text-align: center;">No merchants registered yet</td></tr>`;
+                farmerTable.innerHTML = `<tr><td colspan="5" style="text-align: center;">No farmers registered yet</td></tr>`;
+                return;
+            }
+
+            users.forEach((user, index) => {
+                let actions = "";
+                if (currentUser && currentUser.mobile === user.mobile) {
+                    actions = `
+                        <div class="action-buttons">
+                            <button class="update-button" onclick="updateUser(${index})">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="delete-button" onclick="deleteUser(${index})">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </button>
+                        </div>
+                    `;
+                }
+
+                if (user.role === "Merchant") {
+                    merchantTable.innerHTML += `
+                        <tr>
+                            <td>${user.name || '-'}</td>
+                            <td>${user.mobile || '-'}</td>
+                            <td>${user.crops || '-'}</td>
+                            <td>${user.price ? '₹' + user.price : '-'}</td>
+                            <td>${actions}</td>
+                        </tr>
+                    `;
+                } else if (user.role === "Farmer") {
+                    const produce = [];
+                    if (user.grain) produce.push(user.grain);
+                    if (user.fruit) produce.push(user.fruit);
+                    if (user.vegetable) produce.push(user.vegetable);
+                    
+                    farmerTable.innerHTML += `
+                        <tr>
+                            <td>${user.name || '-'}</td>
+                            <td>${user.mobile || '-'}</td>
+                            <td>${user.address || '-'}</td>
+                            <td>${produce.length > 0 ? produce.join(", ") : '-'}</td>
+                            <td>${actions}</td>
+                        </tr>
+                    `;
+                }
+            });
+        }
+
+        function deleteUser(index) {
+            if (!confirm("Are you sure you want to delete this account? This action cannot be undone.")) {
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            
+            if (users[index].mobile === currentUser.mobile) {
+                // If deleting own account, log out
+                users.splice(index, 1);
+                localStorage.setItem("users", JSON.stringify(users));
+                localStorage.removeItem("currentUser");
+                alert("Your account has been deleted. You will be redirected to the login page.");
+                window.location.href = "index.html";
+            } else {
+                users.splice(index, 1);
+                localStorage.setItem("users", JSON.stringify(users));
+                loadUsers();
+            }
+        }
+
+        function updateUser(index) {
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+            const user = users[index];
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            
+            // Create a form for editing
+            let formContent = `
+                <h3>Edit Your Profile</h3>
+                <form id="editForm" style="display: grid; gap: 10px;">
+                    <label>Full Name:</label>
+                    <input type="text" id="editName" value="${user.name || ''}" required>
+                    
+                    <label>Mobile Number:</label>
+                    <input type="text" id="editMobile" value="${user.mobile || ''}" required>
+            `;
+            
+            if (user.role === "Merchant") {
+                formContent += `
+                    <label>Products You Deal In:</label>
+                    <input type="text" id="editCrops" value="${user.crops || ''}" placeholder="e.g., Wheat, Rice, Apples">
+                    
+                    <label>Price Per Unit (₹):</label>
+                    <input type="text" id="editPrice" value="${user.price || ''}" placeholder="e.g., 25">
+                `;
+            } else if (user.role === "Farmer") {
+                formContent += `
+                    <label>Address:</label>
+                    <input type="text" id="editAddress" value="${user.address || ''}" placeholder="Your farm location">
+                    
+                    <label>Grains You Grow:</label>
+                    <input type="text" id="editGrain" value="${user.grain || ''}" placeholder="e.g., Wheat, Rice">
+                    
+                    <label>Fruits You Grow:</label>
+                    <input type="text" id="editFruit" value="${user.fruit || ''}" placeholder="e.g., Apples, Mangoes">
+                    
+                    <label>Vegetables You Grow:</label>
+                    <input type="text" id="editVegetable" value="${user.vegetable || ''}" placeholder="e.g., Tomatoes, Potatoes">
+                `;
+            }
+            
+            formContent += `
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button type="button" onclick="saveUserChanges(${index})" style="background: var(--primary-color); color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;">
+                        Save Changes
+                    </button>
+                    <button type="button" onclick="document.getElementById('editModal').remove()" style="background: var(--danger-color); color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;">
+                        Cancel
+                    </button>
+                </div>
+                </form>
+            `;
+            
+            // Create modal
+            const modal = document.createElement('div');
+            modal.id = 'editModal';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
+            modal.style.display = 'flex';
+            modal.style.justifyContent = 'center';
+            modal.style.alignItems = 'center';
+            modal.style.zIndex = '2000';
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 25px; border-radius: 10px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                    ${formContent}
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function saveUserChanges(index) {
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+            const user = users[index];
+            
+            const editName = document.getElementById('editName').value.trim();
+            const editMobile = document.getElementById('editMobile').value.trim();
+            
+            if (!editName || !editMobile) {
+                alert('Name and Mobile are required fields');
+                return;
+            }
+            
+            // Validate mobile number
+            if (!/^\d{10}$/.test(editMobile)) {
+                alert('Please enter a valid 10-digit mobile number');
+                return;
+            }
+            
+            user.name = editName;
+            user.mobile = editMobile;
+            
+            if (user.role === "Merchant") {
+                user.crops = document.getElementById('editCrops').value.trim();
+                user.price = document.getElementById('editPrice').value.trim();
+            } else if (user.role === "Farmer") {
+                user.address = document.getElementById('editAddress').value.trim();
+                user.grain = document.getElementById('editGrain').value.trim();
+                user.fruit = document.getElementById('editFruit').value.trim();
+                user.vegetable = document.getElementById('editVegetable').value.trim();
+            }
+            
+            users[index] = user;
+            localStorage.setItem("users", JSON.stringify(users));
+            
+            // Update current user if editing own profile
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            if (currentUser && currentUser.mobile === user.mobile) {
+                localStorage.setItem("currentUser", JSON.stringify(user));
+                document.getElementById("welcome-message").textContent = `Welcome back, ${user.name}!`;
+            }
+            
+            document.getElementById('editModal').remove();
+            loadUsers();
+            alert('Profile updated successfully!');
+        }
+    </script>
+</body>
+</html>

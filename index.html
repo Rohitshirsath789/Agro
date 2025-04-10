@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroAssist - Login & Sign-Up</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('https://images.pexels.com/photos/2165688/pexels-photo-2165688.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            flex-direction: column;
+        }
+        .logo {
+            text-align: left;
+            margin-top: 4cm;
+            margin-right: 25cm;
+        }
+        .logo img {
+            width: 300px;
+            height: auto;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            width: 350px;
+            padding: 25px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin-left: 20cm;
+            margin-bottom: 5cm;
+        }
+        input, select {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.3s ease-in-out;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 95%;
+        }
+        button:hover {
+            transform: scale(1.05);
+            background-color: #1e7e34;
+        }
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+            }
+            .logo img {
+                width: 150px;
+            }
+        }
+        .error-message {
+            color: red;
+            font-size: 12px;
+            text-align: left;
+            margin-left: 15px;
+            margin-top: -5px;
+            margin-bottom: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="image/logo1.png" alt="Logo">
+    </div>
+
+    <div class="container" id="login-container">
+        <h2>Login</h2>
+        <input type="text" id="login-username" placeholder="Username" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <select id="login-role">
+            <option value="Merchant">Merchant</option>
+            <option value="Farmer">Farmer</option>
+        </select>
+        <button onclick="validateLogin()">Login</button>
+        <p id="login-error" style="color: red;"></p>
+        <p>Don't have an account? <a href="#" onclick="showSignUp()">Sign Up</a></p>
+    </div>
+
+    <div class="container" id="signup-container" style="display: none;">
+        <h2>Sign Up</h2>
+        <input type="text" id="signup-username" placeholder="Choose a Username" required>
+        <div id="username-error" class="error-message">Username must be 4-20 characters (letters, numbers, _)</div>
+        
+        <input type="password" id="signup-password" placeholder="Choose a Password" required>
+        <div id="password-error" class="error-message">Password must be 8+ chars with uppercase, lowercase, number</div>
+        
+        <select id="signup-role">
+            <option value="Merchant">Merchant</option>
+            <option value="Farmer">Farmer</option>
+        </select>
+        
+        <input type="text" id="signup-name" placeholder="Your Full Name" required>
+        <div id="name-error" class="error-message">Please enter a valid name (letters and spaces only)</div>
+        
+        <input type="text" id="signup-mobile" placeholder="Mobile Number" required>
+        <div id="mobile-error" class="error-message">Please enter a valid 10-digit mobile number</div>
+        
+        <button onclick="registerUser()">Sign Up</button>
+        <p id="signup-error" style="color: red;"></p>
+        <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+    </div>
+
+    <script>
+        function showSignUp() {
+            document.getElementById("login-container").style.display = "none";
+            document.getElementById("signup-container").style.display = "block";
+            clearSignupErrors();
+        }
+
+        function showLogin() {
+            document.getElementById("signup-container").style.display = "none";
+            document.getElementById("login-container").style.display = "block";
+            document.getElementById("login-error").innerText = "";
+        }
+
+        function clearSignupErrors() {
+            document.getElementById("signup-error").innerText = "";
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.style.display = 'none';
+            });
+        }
+
+        function validateUsername(username) {
+            const regex = /^[a-zA-Z0-9_]{4,20}$/;
+            return regex.test(username);
+        }
+
+        function validatePassword(password) {
+            // At least 8 chars, 1 uppercase, 1 lowercase, 1 number
+            const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+            return regex.test(password);
+        }
+
+        function validateName(name) {
+            const regex = /^[a-zA-Z\s]{2,50}$/;
+            return regex.test(name);
+        }
+
+        function validateMobile(mobile) {
+            const regex = /^[0-9]{10}$/;
+            return regex.test(mobile);
+        }
+
+        function registerUser() {
+            clearSignupErrors();
+            
+            var username = document.getElementById("signup-username").value.trim();
+            var password = document.getElementById("signup-password").value;
+            var role = document.getElementById("signup-role").value;
+            var name = document.getElementById("signup-name").value.trim();
+            var mobile = document.getElementById("signup-mobile").value.trim();
+            
+            let isValid = true;
+            
+            // Validate username
+            if (!validateUsername(username)) {
+                document.getElementById("username-error").style.display = 'block';
+                isValid = false;
+            }
+            
+            // Validate password
+            if (!validatePassword(password)) {
+                document.getElementById("password-error").style.display = 'block';
+                isValid = false;
+            }
+            
+            // Validate name
+            if (!validateName(name)) {
+                document.getElementById("name-error").style.display = 'block';
+                isValid = false;
+            }
+            
+            // Validate mobile
+            if (!validateMobile(mobile)) {
+                document.getElementById("mobile-error").style.display = 'block';
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                document.getElementById("signup-error").innerText = "Please correct the errors above.";
+                return;
+            }
+            
+            // Check if username exists
+            var users = JSON.parse(localStorage.getItem("users")) || [];
+            var existingUser = users.find(user => user.username === username);
+            
+            if (existingUser) {
+                document.getElementById("signup-error").innerText = "Username already exists!";
+                document.getElementById("username-error").style.display = 'block';
+                document.getElementById("username-error").innerText = "Username already taken";
+                return;
+            }
+            
+            // All validations passed - register user
+            users.push({ 
+                username, 
+                password, 
+                role, 
+                name, 
+                mobile 
+            });
+            localStorage.setItem("users", JSON.stringify(users));
+            
+            alert("Sign-up successful! Please login.");
+            showLogin();
+            
+            // Clear form
+            document.getElementById("signup-username").value = '';
+            document.getElementById("signup-password").value = '';
+            document.getElementById("signup-name").value = '';
+            document.getElementById("signup-mobile").value = '';
+        }
+
+        function validateLogin() {
+            var username = document.getElementById("login-username").value.trim();
+            var password = document.getElementById("login-password").value;
+            var role = document.getElementById("login-role").value;
+            
+            if (!username || !password) {
+                document.getElementById("login-error").innerText = "Please enter both username and password.";
+                return;
+            }
+            
+            var users = JSON.parse(localStorage.getItem("users")) || [];
+            var user = users.find(u => u.username === username && u.password === password && u.role === role);
+            
+            if (user) {
+                alert("Login successful as " + role + "!");
+                localStorage.setItem("currentUser", JSON.stringify(user));
+                window.location.href = "dashboard.html";
+            } else {
+                document.getElementById("login-error").innerText = "Invalid username, password, or role!";
+            }
+        }
+    </script>
+</body>
+</html>

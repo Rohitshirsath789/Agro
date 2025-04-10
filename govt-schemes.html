@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Government Schemes | AgroAssist</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #28a745;
+            --secondary-color: #007bff;
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+            --danger-color: #dc3545;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #14be14 0%, #207cca 100%);
+
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            height: 75px;
+            width: auto;
+        }
+        
+        .header img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: white;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .buttons button {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            background-color: var(--secondary-color);
+            color: white;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .buttons button:hover {
+            background-color: #0069d9;
+            transform: translateY(-2px);
+        }
+        
+        /* Main Content Styles */
+        .container {
+            max-width: 1200px;
+            margin: 100px auto 20px;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .page-title {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #eee;
+            position: relative;
+        }
+        
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--primary-color);
+        }
+        
+        /* Scheme Cards */
+        .schemes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .scheme-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            border-top: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .scheme-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scheme-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+        }
+        
+        .scheme-card p {
+            color: #555;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+        
+        .scheme-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        
+        .date {
+            color: #777;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .link:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background-color: #e9ecef;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            color: #495057;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tag.new {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .tag.popular {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        /* Search and Filter */
+        .search-filter {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+        
+        .filter-dropdown {
+            position: relative;
+        }
+        
+        .filter-btn {
+            padding: 0.75rem 1rem;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+            }
+            
+            .logo-container {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .container {
+                margin-top: 140px;
+                padding: 1rem;
+            }
+            
+            .schemes-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-container">
+            <img src="image/logo1.png" alt="AgroAssist Logo">
+            <h1>Government Schemes</h1>
+        </div>
+        <div class="buttons">
+            <button onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h1 class="page-title">Latest Government Schemes</h1>
+        
+        <div class="search-filter">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search schemes...">
+            </div>
+            <div class="filter-dropdown">
+                <button class="filter-btn">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+            </div>
+        </div>
+        
+        <div class="schemes-container">
+            <div class="scheme-card">
+                <span class="tag popular">Popular</span>
+                <h3>PM Kisan Samman Nidhi</h3>
+                <p>Income support scheme providing ₹6,000 per year in three equal installments to small and marginal farmer families.</p>
+                <div class="scheme-meta">
+                    <span class="date"><i class="far fa-calendar-alt"></i> Last updated: 15 June 2023</span>
+                    <a href="https://pmkisan.gov.in" target="_blank" class="link">
+                        Visit Website <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="scheme-card">
+                <span class="tag new">New</span>
+                <h3>Soil Health Card Scheme</h3>
+                <p>Provides farmers with soil health cards containing crop-wise recommendations of nutrients/fertilizers required.</p>
+                <div class="scheme-meta">
+                    <span class="date"><i class="far fa-calendar-alt"></i> Last updated: 1 May 2023</span>
+                    <a href="https://soilhealth.dac.gov.in" target="_blank" class="link">
+                        Visit Website <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="scheme-card">
+                <span class="tag popular">Popular</span>
+                <h3>Pradhan Mantri Fasal Bima Yojana</h3>
+                <p>Crop insurance scheme to protect against yield losses due to natural calamities, pests & diseases.</p>
+                <div class="scheme-meta">
+                    <span class="date"><i class="far fa-calendar-alt"></i> Last updated: 20 April 2023</span>
+                    <a href="https://pmfby.gov.in" target="_blank" class="link">
+                        Visit Website <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="scheme-card">
+                <h3>National Mission on Agricultural Extension</h3>
+                <p>Scheme to strengthen agricultural extension services to farmers through various interventions.</p>
+                <div class="scheme-meta">
+                    <span class="date"><i class="far fa-calendar-alt"></i> Last updated: 10 March 2023</span>
+                    <a href="https://agricoop.nic.in" target="_blank" class="link">
+                        Visit Website <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="scheme-card">
+                <h3>Kisan Credit Card (KCC) Scheme</h3>
+                <p>Provides affordable credit to farmers for their cultivation needs and other agriculture-related expenses.</p>
+                <div class="scheme-meta">
+                    <span class="date"><i class="far fa-calendar-alt"></i> Last updated: 5 March 2023</span>
+                    <a href="https://www.nabard.org" target="_blank" class="link">
+                        Visit Website <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="scheme-card">
+                <span class="tag new">New</span>
+                <h3>Paramparagat Krishi Vikas Yojana</h3>
+                <p>Promotes organic farming through adoption of organic village by cluster approach and PGS certification.</p>
+                <div class="scheme-meta">
+                    <span class="date"><i class="far fa-calendar-alt"></i> Last updated: 28 February 2023</span>
+                    <a href="https://pgsindia-ncof.gov.in" target="_blank" class="link">
+                        Visit Website <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Authentication check
+        window.onload = function() {
+            if (!localStorage.getItem("currentUser")) {
+                window.location.href = "index.html";
+            }
+            
+            // Search functionality
+            const searchInput = document.querySelector('.search-box input');
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const cards = document.querySelectorAll('.scheme-card');
+                
+                cards.forEach(card => {
+                    const title = card.querySelector('h3').textContent.toLowerCase();
+                    const desc = card.querySelector('p').textContent.toLowerCase();
+                    
+                    if (title.includes(searchTerm) || desc.includes(searchTerm)) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Filter functionality can be added here
+        };
+    </script>
+</body>
+</html>

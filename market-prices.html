@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Market Prices | AgroAssist</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #28a745;
+            --secondary-color: #218838;
+            --danger-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --text-color: #333;
+            --border-color: #ddd;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: var(--text-color);
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .header img {
+            width: 80px;
+            height: auto;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .buttons button {
+            padding: 8px 15px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .logout {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .back-button {
+            background-color: white;
+            color: var(--primary-color);
+        }
+        
+        .buttons button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 100px auto 30px;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-style: italic;
+            color: #666;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary-color);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .market-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .search-filter input, .search-filter select {
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .market-prices {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .market-prices th, .market-prices td {
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            text-align: left;
+        }
+        
+        .market-prices th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .market-prices tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .market-prices tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .commodity-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .commodity-icon {
+            font-size: 24px;
+        }
+        
+        .price-up {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .price-down {
+            color: var(--danger-color);
+            font-weight: 600;
+        }
+        
+        .price-neutral {
+            color: #666;
+        }
+        
+        .refresh-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 20px auto;
+            padding: 10px 25px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .last-updated {
+            text-align: right;
+            font-style: italic;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                padding: 15px;
+                gap: 15px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .container {
+                margin-top: 150px;
+                padding: 15px;
+            }
+            
+            .market-prices {
+                font-size: 14px;
+            }
+            
+            .market-prices th, .market-prices td {
+                padding: 10px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <img src="image/logo1.png" alt="AgroAssist Logo">
+            <h1>Real-time Market Prices</h1>
+        </div>
+        <div class="buttons">
+            <button class="back-button" onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </button>
+            <button class="logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Fetching latest market prices...</p>
+        </div>
+        
+        <div id="market-data" class="hidden">
+            <div class="market-controls">
+                <div class="search-filter">
+                    <input type="text" id="search-input" placeholder="Search commodity or market..." oninput="filterPrices()">
+                    <select id="commodity-filter" onchange="filterPrices()">
+                        <option value="">All Commodities</option>
+                        <option value="Wheat">Wheat</option>
+                        <option value="Rice">Rice</option>
+                        <option value="Maize">Maize</option>
+                        <option value="Potato">Potato</option>
+                        <option value="Tomato">Tomato</option>
+                        <option value="Onion">Onion</option>
+                        <option value="Cotton">Cotton</option>
+                        <option value="Soybean">Soybean</option>
+                    </select>
+                    <select id="market-filter" onchange="filterPrices()">
+                        <option value="">All Markets</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Mumbai">Mumbai</option>
+                        <option value="Punjab">Punjab</option>
+                        <option value="Kolkata">Kolkata</option>
+                        <option value="Chennai">Chennai</option>
+                        <option value="Hyderabad">Hyderabad</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="West Bengal">West Bengal</option>
+                    </select>
+                </div>
+            </div>
+            
+            <table class="market-prices">
+                <thead>
+                    <tr>
+                        <th>Commodity</th>
+                        <th>Price (₹/Quintal)</th>
+                        <th>Market</th>
+                        <th>Change (24h)</th>
+                        <th>Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody id="prices-table">
+                    <!-- Market data will be loaded here -->
+                </tbody>
+            </table>
+            
+            <div class="last-updated" id="last-updated">
+                Last updated: <span id="update-time"></span>
+            </div>
+            
+            <button class="refresh-btn" onclick="fetchMarketData()">
+                <i class="fas fa-sync-alt"></i> Refresh Prices
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Global variable to store all market data
+        let allMarketData = [];
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            if (!currentUser) {
+                alert("Please login first!");
+                window.location.href = "index.html";
+                return;
+            }
+            
+            // Fetch market data with a slight delay to show loading spinner
+            setTimeout(fetchMarketData, 500);
+        });
+
+        function logout() {
+            if (confirm("Are you sure you want to logout?")) {
+                localStorage.removeItem("currentUser");
+                window.location.href = "index.html";
+            }
+        }
+
+        function fetchMarketData() {
+            const loadingElement = document.getElementById("loading");
+            const marketDataElement = document.getElementById("market-data");
+            
+            // Show loading message
+            loadingElement.style.display = "flex";
+            marketDataElement.classList.add("hidden");
+            
+            // Simulate API call delay (in real app, this would be a fetch() call)
+            setTimeout(function() {
+                // Generate mock market data
+                allMarketData = generateMockMarketData();
+                displayMarketData(allMarketData);
+                
+                // Update last updated time
+                const now = new Date();
+                document.getElementById("update-time").textContent = now.toLocaleString();
+                
+                // Hide loading and show data
+                loadingElement.style.display = "none";
+                marketDataElement.classList.remove("hidden");
+            }, 1000);
+        }
+        
+        function generateMockMarketData() {
+            const commodities = [
+                { name: "Wheat", icon: "🌾", markets: ["Delhi", "Mumbai", "Punjab"] },
+                { name: "Rice", icon: "🍚", markets: ["Kolkata", "Chennai", "Hyderabad"] },
+                { name: "Maize", icon: "🌽", markets: ["Karnataka", "Maharashtra", "Andhra"] },
+                { name: "Potato", icon: "🥔", markets: ["Uttar Pradesh", "West Bengal", "Bihar"] },
+                { name: "Tomato", icon: "🍅", markets: ["Maharashtra", "Karnataka", "Andhra"] },
+                { name: "Onion", icon: "🧅", markets: ["Maharashtra", "Karnataka", "Gujarat"] },
+                { name: "Cotton", icon: "🧶", markets: ["Gujarat", "Maharashtra", "Punjab"] },
+                { name: "Soybean", icon: "🟫", markets: ["Madhya Pradesh", "Maharashtra", "Rajasthan"] }
+            ];
+            
+            const data = [];
+            const today = new Date();
+            
+            commodities.forEach(commodity => {
+                commodity.markets.forEach(market => {
+                    const basePrice = Math.floor(Math.random() * 5000) + 1000;
+                    const change = (Math.random() * 10 - 5).toFixed(2);
+                    const changeType = change > 0 ? "up" : (change < 0 ? "down" : "neutral");
+                    
+                    data.push({
+                        commodity: commodity.name,
+                        icon: commodity.icon,
+                        price: basePrice,
+                        market: market,
+                        change: Math.abs(change),
+                        changeType: changeType,
+                        lastUpdated: new Date(today.getTime() - Math.floor(Math.random() * 24 * 60 * 60 * 1000)).toLocaleString()
+                    });
+                });
+            });
+            
+            return data;
+        }
+        
+        function displayMarketData(data) {
+            const tableBody = document.getElementById("prices-table");
+            tableBody.innerHTML = "";
+            
+            if (data.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center;">No matching prices found</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            data.forEach(item => {
+                const changeIcon = item.changeType === "up" ? "↑" : (item.changeType === "down" ? "↓" : "→");
+                const changeClass = "price-" + item.changeType;
+                
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>
+                            <div class="commodity-cell">
+                                <span class="commodity-icon">${item.icon}</span>
+                                <span>${item.commodity}</span>
+                            </div>
+                        </td>
+                        <td>₹${item.price.toLocaleString('en-IN')}</td>
+                        <td>${item.market}</td>
+                        <td class="${changeClass}">${changeIcon} ${item.change}%</td>
+                        <td>${item.lastUpdated}</td>
+                    </tr>
+                `;
+            });
+        }
+        
+        function filterPrices() {
+            const searchTerm = document.getElementById("search-input").value.toLowerCase();
+            const commodityFilter = document.getElementById("commodity-filter").value;
+            const marketFilter = document.getElementById("market-filter").value;
+            
+            const filteredData = allMarketData.filter(item => {
+                const matchesSearch = item.commodity.toLowerCase().includes(searchTerm) || 
+                                    item.market.toLowerCase().includes(searchTerm);
+                const matchesCommodity = commodityFilter ? item.commodity === commodityFilter : true;
+                const matchesMarket = marketFilter ? item.market === marketFilter : true;
+                
+                return matchesSearch && matchesCommodity && matchesMarket;
+            });
+            
+            displayMarketData(filteredData);
+        }
+    </script>
+</body>
+</html>
